@@ -11,7 +11,7 @@ const CreateAccountForm = ({ setAlert, setMessage, setEmoji}) => {
 
   const [buttonText, setButtonText] = useState("Create Account")
 
-  const { user, setUser } = useContext(UserContext)
+  const { users, setUsers } = useContext(UserContext)
 
   const handleChange = (e) => {
     setNewUser({ ...newUser, [e.target.name]: e.target.value })
@@ -25,7 +25,7 @@ const CreateAccountForm = ({ setAlert, setMessage, setEmoji}) => {
       setMessage('Please fill in all fields')
       setEmoji('🙅🏾‍♂️')
       return
-    } else if (user.find((user) => user.email === newUser.email)) {
+    } else if (users.find((user) => user.email === newUser.email)) {
       setAlert(true)
       setMessage('Email already exists')
       setEmoji('🐒')
@@ -43,7 +43,7 @@ const CreateAccountForm = ({ setAlert, setMessage, setEmoji}) => {
       setMessage('Account created successfully')
       setEmoji('🎉')
     }
-    setUser([...user, newUser])
+    setUsers([...users, newUser])
     // Cleared Create Account Form:
     setNewUser({
       name: '',

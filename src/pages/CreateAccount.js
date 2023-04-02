@@ -1,5 +1,6 @@
 import CreateAccountForm from '../components/Forms/CreateAccountForm'
 import { useEffect, useState } from 'react'
+import Toast from '../components/Toast'
 
 const CreateAccount = () => {
   const [alert, setAlert] = useState(null)
@@ -7,11 +8,11 @@ const CreateAccount = () => {
   const [emoji, setEmoji] = useState('')
 
   useEffect(() => {
-    const toastLive = document.getElementById('liveToast')
+    const toast = document.getElementById('toast')
 
     if (alert) {
       const toastBootstrap =
-        window.bootstrap.Toast.getOrCreateInstance(toastLive)
+        window.bootstrap.Toast.getOrCreateInstance(toast)
       toastBootstrap.show()
       setTimeout(() => {
         setAlert(false)
@@ -27,28 +28,7 @@ const CreateAccount = () => {
           <CreateAccountForm setAlert={setAlert} setMessage={setMessage} setEmoji={setEmoji} />
         </div>
       </div>
-      <div class='toast-container position-fixed bottom-0 end-0 p-3'>
-        <div
-          id='liveToast'
-          class='toast'
-          role='alert'
-          aria-live='assertive'
-          aria-atomic='true'
-        >
-          <div class='toast-header'>
-            {emoji}
-            <strong class='me-auto'>Message</strong>
-            <small>just now</small>
-            <button
-              type='button'
-              class='btn-close'
-              data-bs-dismiss='toast'
-              aria-label='Close'
-            ></button>
-          </div>
-          <div class='toast-body'>{message}</div>
-        </div>
-      </div>
+      <Toast message={message} emoji={emoji} id='toast' />
     </div>
   )
 }
