@@ -1,25 +1,24 @@
-import { createContext } from 'react'
-import { useState } from 'react'
+import { createContext, useState, useEffect } from 'react'
 
 const UserContext = createContext({})
 
 const ContextProvider = ({ children }) => {
-  const [users, setUsers] = useState([{
-    name: 'John Doe',
-    email: 'jd@hotmail.com',
-    password: '123456',
-    balance: 0,
-  }])
-  const [balance, setBalance] = useState(0)
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')) || {})
+  const [balance, setBalance] = useState(JSON.parse(localStorage.getItem('balance')) || 0)
 
-  const getCurrentUser = () => {
-    return users[users.length - 1]
+  useEffect(() => {
+    localStorage.setItem('user', JSON.stringify(user))
+    localStorage.setItem('balance', JSON.stringify(balance))
+  }, [user, balance])
+
+   const getCurrentUser = () => {
+    return user
   }
 
   const updateBalance = (e, title, amount, setAmount, currentUser, callback) => {
     e.preventDefault()
   
-    const updatedUsers = users.map((user) => {
+    const updatedUser = (user) => {
       if (user.email === currentUser.email) {
         if (title === 'Deposit') {
           // Success Message: When a user completes the withdrawal form, 
@@ -37,21 +36,18 @@ const ContextProvider = ({ children }) => {
         }
       }
       return user
-    })
-  
-    setUsers(updatedUsers)
-    setAmount('')
+    }
   }
 
   return (
     <UserContext.Provider
       value={{
         updateBalance,
-        setUsers,
+        setUser,
         getCurrentUser,
         setBalance,
         balance,
-        users,
+        user,
       }}
     >
       {children}
@@ -60,5 +56,4 @@ const ContextProvider = ({ children }) => {
 }
 
 export default ContextProvider
-
 export { UserContext }

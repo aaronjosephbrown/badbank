@@ -1,7 +1,9 @@
 import { useContext, useState, useEffect } from 'react'
 import { UserContext } from '../../context/UserContext'
+import axios from 'axios'
 
-const CreateAccountForm = ({ setAlert, setMessage, setEmoji}) => {
+const CreateAccountForm = ({ setAlert, setMessage, setEmoji }) => {
+
   const [newUser, setNewUser] = useState({
     name: '',
     email: '',
@@ -9,50 +11,58 @@ const CreateAccountForm = ({ setAlert, setMessage, setEmoji}) => {
     balance: 0,
   })
 
-  const [buttonText, setButtonText] = useState("Create Account")
-
-  const { users, setUsers } = useContext(UserContext)
+  const [buttonText, setButtonText] = useState('Create Account')
 
   const handleChange = (e) => {
     setNewUser({ ...newUser, [e.target.name]: e.target.value })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // Name validation: The user receives an alert if the name field is left blank. Email validation: The user receives an alert if this field is blank 
+    // Name validation: The user receives an alert if the name field is left blank. Email validation: The user receives an alert if this field is blank
     if (!newUser.name || !newUser.email || !newUser.password) {
       setAlert(true)
       setMessage('Please fill in all fields')
-      setEmoji('🙅🏾‍♂️')
-      return
-    } else if (users.find((user) => user.email === newUser.email)) {
-      setAlert(true)
-      setMessage('Email already exists')
-      setEmoji('🐒')
-      return
-      // Password validation: The user receives an alert if the password is less than 8 characters long. 
+      return setEmoji('🙅🏾‍♂️')
     } else if (newUser.password.length < 8) {
       setAlert(true)
       setMessage('Password must be at least 8 characters')
-      setEmoji('🐙')
-      return
+      return setEmoji('🐙')
     }
-    // Success message: Upon selecting the create account button the user should see a success message. 
-    else {
+    // Success message: Upon selecting the create account button the user should see a success message.
+    // Cleared Create Account Form:
+
+    const data = await axios
+      .post('http://localhost:5001/api/createaccount', {
+        ...newUser,
+      })
+      .then((res) => {
+        return res.data
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+
+
+    if (data === 'User already exists') {
+      setAlert(true)
+      setMessage('User already exists')
+      return setEmoji('🐒')
+    }
+
+
+    if (data === 'Account created') {
       setAlert(true)
       setMessage('Account created successfully')
       setEmoji('🎉')
+      setButtonText('Add Another Account')
+      return setNewUser({
+        name: '',
+        email: '',
+        password: '',
+        balance: 0,
+      })
     }
-    setUsers([...users, newUser])
-    // Cleared Create Account Form:
-    setNewUser({
-      name: '',
-      email: '',
-      password: '',
-      balance: 0,
-    })
-    // Add Another Account Button: Upon selecting the create account button, the user should see an add another account button. 
-    setButtonText("Add Another Account")
   }
 
   return (
